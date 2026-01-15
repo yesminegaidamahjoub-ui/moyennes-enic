@@ -44,9 +44,19 @@ export default function Page() {
     }
     setBilanActuel(null);
   };
-
-  const calculerMoyMat = (cc: string, exam: string) => (parseFloat(cc) || 0) * 0.35 + (parseFloat(exam) || 0) * 0.65;
-
+const validerNote = (valeur: string): string => {
+  const num = parseFloat(valeur);
+  if (valeur === "") return ""; // Autorise le vide pour effacer
+  if (isNaN(num)) return "";    // Empêche le texte
+  if (num < 0) return "0";
+  if (num > 20) return "20";
+  return valeur;
+};
+ const calculerMoyMat = (cc: string, exam: string) => {
+  const nCC = parseFloat(cc) || 0;
+  const nExam = parseFloat(exam) || 0;
+  return nCC * 0.35 + nExam * 0.65;
+};
   const calculerSemestre = () => {
     let pts = 0, cfs = 0, ech: string[] = [];
     ues.forEach(ue => {
@@ -71,15 +81,27 @@ export default function Page() {
     <div style={{ background: "#020617", minHeight: "100vh", padding: "20px", color: "#f8fafc", fontFamily: "system-ui, sans-serif" }}>
       <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
         
-        {/* HEADER */}
-        <header style={{ textAlign: "center", marginBottom: "40px" }}>
-          <div style={{ display: "flex", justifyContent: "center", gap: "25px", marginBottom: "25px", flexWrap: "wrap" }}>
-            <div style={bigPhotoWrapper}><img src="/logo1.jpg" style={photoImg} alt="ENIC" /></div>
-            <div style={bigPhotoWrapper}><img src="/me.jpg" style={photoImg} alt="Yasmine" /></div>
-          </div>
-          <h1 style={{ fontSize: "clamp(1.8rem, 5vw, 2.8rem)", fontWeight: "900" }}>ENICarthage</h1>
-          <p style={{ color: "#fbbf24", fontWeight: "600" }}>Simulateur de Moyenne </p>
-        </header>
+        <header style={{ textAlign: "center", marginBottom: "40px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+  
+  {/* HEADER */}
+  <div style={logoRectWrapper}>
+    <img src="/logo1.jpg" style={rectImg} alt="ENIC Logo" />
+  </div>
+
+  {/* PHOTO PERSONNELLE ET NOM */}
+  <div style={{ marginTop: "25px", textAlign: "center" }}>
+    <div style={profileRoundWrapper}>
+      <img src="/me.jpg" style={roundImg} alt="Yasmine" />
+    </div>
+    <h2 style={{ fontSize: "1.1rem", marginTop: "12px", fontWeight: "700", color: "#fbbf24", letterSpacing: "0.5px" }}>
+      Yasmine Gaida Mahjoub
+    </h2>
+    <p style={{ fontSize: "0.75rem", opacity: 0.6, textTransform: "uppercase" }}>Élève Ingénieur GI1</p>
+  </div>
+
+  <h1 style={{ fontSize: "clamp(1.8rem, 5vw, 2.8rem)", fontWeight: "900", marginTop: "20px" }}>ENICarthage</h1>
+  <p style={{ color: "#3b82f6", fontWeight: "600" }}>Simulateur de Moyenne </p>
+</header>
 
         {/* CONFIGURATION */}
         <section style={glassCard}>
@@ -142,15 +164,15 @@ export default function Page() {
                       {ue.matieres.map((m, mIdx) => (
                         <div key={mIdx} style={matRowStyle}>
                           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                            <span style={{ fontSize: "0.85rem", opacity: 0.9 }}>{m.matiere}</span>
+                            <span style={{ fontSize: "0.85rem", opacity: 0.9 }}>{m.matiere} <span style={{ color: "#3b82f6", fontSize: "0.75rem", fontWeight: "bold" }}>(x{m.coef})</span></span>
                             <span style={{ color: "#fbbf24", fontWeight: "bold" }}>{calculerMoyMat(m.cc, m.exam).toFixed(2)}</span>
                           </div>
                           <div style={{ display: "flex", gap: "10px" }}>
-                            <input type="number" placeholder="DS" style={darkInput} value={m.cc} onChange={e => {
-                               const n = [...ues]; n[uIdx].matieres[mIdx].cc = e.target.value; setUes(n);
+                            <input type="number" min="0" max="20" step="0.25" placeholder="DS" style={darkInput} value={m.cc} onChange={e => {
+                               const n = [...ues]; n[uIdx].matieres[mIdx].cc =validerNote(e.target.value); setUes(n);
                             }} />
-                            <input type="number" placeholder="Ex" style={darkInput} value={m.exam} onChange={e => {
-                               const n = [...ues]; n[uIdx].matieres[mIdx].exam = e.target.value; setUes(n);
+                            <input type="number" min="0" max="20" step="0.25" placeholder="Ex" style={darkInput} value={m.exam} onChange={e => {
+                               const n = [...ues]; n[uIdx].matieres[mIdx].exam = validerNote(e.target.value); setUes(n);
                             }} />
                           </div>
                         </div>
@@ -219,7 +241,40 @@ const resultBadge = { marginTop: "20px", fontSize: "1.5rem", fontWeight: "bold" 
 const finalResult = { marginTop: "25px", textAlign: "center" as const, fontSize: "2.2rem", fontWeight: "950" };
 const ueHeaderStyle = { padding: "12px 15px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px" };
 const matRowStyle = { marginBottom: "12px", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "8px" };
-const bigPhotoWrapper = { width: "120px", height: "120px", borderRadius: "50%", background: "#fff", padding: "4px", boxShadow: "0 0 20px rgba(59, 130, 246, 0.4)" };
-const photoImg = { width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" as const };
+const logoRectWrapper = { 
+  width: "220px",            
+  height: "80px",            
+  borderRadius: "4px", 
+  overflow: "hidden",        
+  display: "flex", 
+  alignItems: "center", 
+  justifyContent: "center",
+  marginBottom: "15px",
+  boxShadow: "0 2px 10px rgba(0,0,0,0.3)"
+};
+
+const rectImg = { 
+  width: "100%", 
+  height: "100%", 
+  objectFit: "fill" as const, 
+  display: "block"
+};
+const profileRoundWrapper = { 
+  width: "90px", 
+  height: "90px", 
+  borderRadius: "50%", 
+  background: "linear-gradient(135deg, #fbbf24, #3b82f6)", 
+  padding: "2px", 
+  margin: "0 auto", 
+  boxShadow: "0 4px 15px rgba(0,0,0,0.3)" 
+};
+
+const roundImg = { 
+  width: "100%", 
+  height: "100%", 
+  borderRadius: "50%", 
+  objectFit: "cover" as const, 
+  border: "4px solid #020617" 
+};
 const responsiveGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" };
 const emptyState = { textAlign: "center" as const, padding: "40px", opacity: 0.5, fontStyle: "italic" };
