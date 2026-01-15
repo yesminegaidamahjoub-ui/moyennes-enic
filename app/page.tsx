@@ -23,7 +23,11 @@ const DATA_SEMESTRES: Record<string, UE[]> = {
 
 interface Note { matiere: string; coef: number; cc: string; exam: string; }
 interface UE { id: string; titre: string; matieres: Note[]; }
-
+if (typeof document !== 'undefined') {
+  document.body.style.margin = "0";
+  document.body.style.padding = "0";
+  document.body.style.background = "#020617";
+}
 export default function Page() {
   const [config, setConfig] = useState({ niveau: "1", specialite: "gi", semestre: "" });
   const [ues, setUes] = useState<UE[]>([]);
@@ -276,5 +280,10 @@ const roundImg = {
   objectFit: "cover" as const, 
   border: "4px solid #020617" 
 };
-const responsiveGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px" };
+const responsiveGrid = { 
+  display: "grid", 
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", // Réduit le minimum à 280px
+  gap: "15px", // Espace légèrement réduit pour gagner de la place
+  width: "100%"
+};
 const emptyState = { textAlign: "center" as const, padding: "40px", opacity: 0.5, fontStyle: "italic" };
